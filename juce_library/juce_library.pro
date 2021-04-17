@@ -11,7 +11,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 # Path to JUCE modules
-INCLUDEPATH += /Users/user/Downloads/JUCE/modules
+INCLUDEPATH += $$PWD\modules
 
 # Juce defines
 DEFINES += JUCE_APP_VERSION=1.0.0 \
@@ -90,7 +90,3 @@ HEADERS += \
         JuceLibraryCode/JuceHeader.h \
         JuceLibraryCode/AppConfig.h
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}

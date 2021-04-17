@@ -5,6 +5,8 @@
 JucePlayer::JucePlayer()
     : QObject()
 {
+
+    qDebug() << "dfgh";
     // Register MP3 format as default
     m_formatManager.registerFormat(&m_format, true);
 
@@ -13,13 +15,14 @@ JucePlayer::JucePlayer()
     // Set AudioSourcePlayer as audio callback for output device
     m_deviceManager.addAudioCallback(&m_player);
 
+    m_deviceManager.addAudioCallback(this);
 
     // Lock MessageManager for safety intall listner
     MessageManagerLock lock(Thread::getCurrentThread());
     m_transport.addChangeListener(this);
 }
 
-void JucePlayer::changeListenerCallback(ChangeBroadcaster *source)
+void JucePlayer::changeListenerCallback(ChangeBroadcaster* source)
 {
     if (source == &m_transport) {
         if (m_transport.isPlaying()) {
@@ -31,13 +34,14 @@ void JucePlayer::changeListenerCallback(ChangeBroadcaster *source)
     }
 }
 
-void JucePlayer::setAudioSource(const char *data, size_t size)
+void JucePlayer::setAudioSource(const char* data, size_t size)
 {
     m_inputStream.reset(new MemoryInputStream(data, size, false));
 
-    AudioFormatReader *reader = m_formatManager.createReaderFor(m_inputStream.data());
+    AudioFormatReader* reader
+        = m_formatManager.createReaderFor(std::unique_ptr<juce::InputStream>(m_inputStream.release()));
 
-    m_currentReaderSource.reset(new AudioFormatReaderSource (reader, true));
+    m_currentReaderSource.reset(new AudioFormatReaderSource(reader, true));
 
     m_transport.setSource(m_currentReaderSource.data(), 0, nullptr, reader->sampleRate);
     m_player.setSource(&m_transport);
@@ -64,4 +68,19 @@ double JucePlayer::getCurrentPosition() const
 double JucePlayer::getTotalTime() const
 {
     return m_transport.getLengthInSeconds();
+}
+
+void JucePlayer::audioDeviceIOCallback(const float** inputChannelData, int numInputChannels, float** outputChannelData, int numOutputChannels, int numSamples)
+{
+    qDebug() << "a";
+}
+
+void JucePlayer::audioDeviceAboutToStart(AudioIODevice* device)
+{
+    qDebug() << "af";
+}
+
+void JucePlayer::audioDeviceStopped()
+{
+    qDebug() << "a1";
 }

@@ -3,15 +3,17 @@
 
 #include "JuceLibraryCode/JuceHeader.h"
 
-#include <QScopedPointer>
+#include <QDebug>
 #include <QObject>
+#include <QScopedPointer>
 
 /*!
  *    \class JucePlayer
  *    \brief very simple example how to play media data from JUCE in Qt project
  */
-class JucePlayer: public QObject,
-                   public ChangeListener
+class Q_DECL_EXPORT JucePlayer : public QObject,
+                                 public ChangeListener,
+                                 public AudioIODeviceCallback
 
 {
     Q_OBJECT
@@ -20,10 +22,10 @@ public:
     JucePlayer();
 
     //! \note Callback for AudioTransportSource
-    void changeListenerCallback (ChangeBroadcaster *source) override;
+    void changeListenerCallback(ChangeBroadcaster* source) override;
 
     //! \note Set raw audio file data or another audio data in MP3 format
-    void setAudioSource(const char *data, size_t size);
+    void setAudioSource(const char* data, size_t size);
 
     void stop();
     void play();
@@ -43,7 +45,13 @@ private:
     MP3AudioFormat m_format;
 
     QScopedPointer<AudioFormatReaderSource> m_currentReaderSource;
-    QScopedPointer<MemoryInputStream> m_inputStream;
+    std::unique_ptr<MemoryInputStream> m_inputStream;
+
+    // AudioIODeviceCallback interface
+public:
+    void audioDeviceIOCallback(const float **inputChannelData, int numInputChannels, float **outputChannelData, int numOutputChannels, int numSamples);
+    void audioDeviceAboutToStart(AudioIODevice *device);
+    void audioDeviceStopped();
 };
 
 #endif // JUCEPLAYER_H

@@ -1,5 +1,7 @@
 QT += quick
 
+INCLUDEPATH += $$PWD\..\juce_library\modules
+
 CONFIG += c++14
 
 DEFINES += JUCE_APP_VERSION=1.0.0 \
@@ -39,7 +41,7 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-LIBS += -L$$OUT_PWD/../juce_library/ -ljuce_library
+LIBS += -L$$OUT_PWD/../juce_library/debug -ljuce_library
 
 INCLUDEPATH += $$PWD/../juce_library
 DEPENDPATH += $$PWD/../juce_library
@@ -80,3 +82,18 @@ contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
         $$PWD/android
 }
 }
+
+
+
+LIBS += kernel32.lib
+LIBS += user32.lib
+LIBS += gdi32.lib
+LIBS += winspool.lib
+LIBS += comdlg32.lib
+LIBS += advapi32.lib
+LIBS += shell32.lib
+LIBS += ole32.lib
+LIBS += oleaut32.lib
+LIBS += uuid.lib
+LIBS += odbc32.lib
+LIBS += odbccp32.lib
